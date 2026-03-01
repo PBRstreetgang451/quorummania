@@ -834,12 +834,12 @@ const LANG_OPTIONS = Object.entries(TR).map(([code, t]) => ({
 }));
 const EXPL_STEPS = [
   'What is quorum?',
-  'Why it matters',
-  'Board size & quorum',
-  'The average trap',
-  'Think of a coin flip',
+  'Why?',
+  'Board Size',
+  'The Average Trap',
+  'Flip of a Coin',
   'The Math',
-  'Live Simulation',
+  'Simulator',
   'Summary',
 ];
 
@@ -1412,13 +1412,14 @@ export default function App() {
   };
 
   const [step, setStep] = useState(0);
-  const [sBd, setSBd] = useState(12);
-  const [sQ, setSQ] = useState(7);
-  const [sAtt, setSAtt] = useState(70);
+  const [sBd, setSBd] = useState(10);
+  const [sQ, setSQ] = useState(6);
+  const [sAtt, setSAtt] = useState(60);
   const [sN, setSN] = useState(50);
   const [sRes, setSRes] = useState([]);
   const [sRun, setSRun] = useState(false);
   const [sDone, setSDone] = useState(false);
+  const [coinFlip, setCoinFlip] = useState(0);
   const animRef = useRef(null);
   const sP = sAtt / 100;
   const sTheo = Math.round(binomialProb(sBd, sQ, sP) * 1000) / 10;
@@ -1550,13 +1551,11 @@ export default function App() {
       <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1.25rem' }}>
         For most nonprofit and civic boards, quorum is defined in the bylaws as a simple majority. A 12-member board typically needs 7 present to proceed.
       </p>
-      <SimCtrl />
       <div style={{ ...crd(), marginTop: '1rem' }}>
         <div style={{ fontSize: '0.75rem', color: clr.muted, marginBottom: 10 }}>
           Board seats — quorum threshold highlighted
         </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-          {Array.from({ length: sBd }, (_, i) => {
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center' }}>          {Array.from({ length: sBd }, (_, i) => {
             const isQuorum = i === sQ - 1;
             const isFilled = i < sQ;
             return (
@@ -1574,7 +1573,7 @@ export default function App() {
           })}
         </div>
         <div style={{ fontSize: '0.72rem', color: clr.dim, marginTop: 8 }}>
-          🟡 = quorum threshold seat · 🟢 = needed for quorum · ⚫ = additional members
+          🟡 = quorum threshold seat · 🟢 = needed for quorum · ⚫ = not needed for quorum
         </div>
       </div>
       <div style={{ marginTop: '1rem', fontSize: '0.75rem', color: '#475569' }}>
@@ -1672,9 +1671,8 @@ export default function App() {
         Your average tells you what happens <em>across all meetings over time</em>. It says nothing about what happens at <em>this specific meeting</em>. Some months everyone shows up. Some months three people are traveling, one is sick, and another has a family emergency — all at the same time.
       </p>
       <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1.25rem' }}>
-        Quorum doesn't grade on a curve. It doesn't care that your annual average looks good. It only asks one question: <strong style={{ color: clr.text }}>are enough people here right now?</strong>
+        Quorum doesn't grade on a curve. It doesn't care that your annual average looks good. It only asks one question: <strong style={{ color: clr.text }}>Are enough people here right now?</strong>
       </p>
-      <SimCtrl />
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: '1rem' }}>
         <div style={{ ...crd(), borderLeft: `3px solid ${clr.neutral}` }}>
           <div style={{ fontSize: '0.75rem', color: clr.muted, marginBottom: 3 }}>Expected average attendees</div>
@@ -1697,8 +1695,8 @@ export default function App() {
 
     // Step 5 — Think of a coin flip
     <div key="i4">
-      <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#f8fafc', marginBottom: 8 }}>
-        Think of it like a coin flip
+     <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#f8fafc', marginBottom: 8 }}>
+        Flip of a Coin
       </h3>
       <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1rem' }}>
         Here's a way to make the randomness concrete.
@@ -1712,14 +1710,13 @@ export default function App() {
       <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1.25rem' }}>
         Now flip all the coins at once. Most of the time you get a good spread. But sometimes several tails cluster together in the same meeting — not because anyone failed, just because that's how randomness works. <strong style={{ color: clr.text }}>Bad streaks are inevitable. The question is whether your board is built to survive them.</strong>
       </p>
-      <SimCtrl />
       <div style={{ ...crd(), marginTop: '1rem' }}>
         <div style={{ fontSize: '0.75rem', color: clr.muted, marginBottom: 10 }}>
           One random meeting at {sAtt}% attendance — each circle is a board member:
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
-          {Array.from({ length: sBd }, (_, i) => {
-            const a = Math.random() < sP;
+        {Array.from({ length: sBd }, (_, i) => {
+            const a = Math.random() < 0.6;
             return (
               <div key={i} style={{
                 width: 38, height: 38, borderRadius: '50%',
@@ -1732,9 +1729,15 @@ export default function App() {
               </div>
             );
           })}
-        </div>
+                  </div>
+                  <button
+          onClick={() => setCoinFlip((n) => n + 1)}
+          style={{ marginTop: 10, marginBottom: 8, padding: '7px 18px', borderRadius: 8, border: 'none', background: '#6366f1', color: '#fff', cursor: 'pointer', fontWeight: 700, fontSize: '0.85rem' }}
+        >
+          🪙 Flip the Coins
+        </button>
         <div style={{ fontSize: '0.72rem', color: clr.dim, marginTop: 8 }}>
-          <span style={{ color: clr.good }}>✓ attends</span> · <span style={{ color: clr.bad }}>✗ misses</span> · Adjust the sliders above to see a new random outcome.
+          <span style={{ color: clr.good }}>✓ attends</span> · <span style={{ color: clr.bad }}>✗ misses</span>
         </div>
       </div>
     </div>,
@@ -1747,14 +1750,13 @@ export default function App() {
       <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1rem' }}>
         What you just saw with the coins has a name: the <strong style={{ color: clr.text }}>binomial distribution</strong>. It's the formula that calculates exactly how likely you are to get a bad streak — and by extension, how likely your board is to make quorum on any given meeting.
       </p>
-      <SimCtrl />
       <div style={{ ...crd(), marginBottom: 10 }}>
         <div style={{ background: '#0f172a', borderRadius: 8, padding: '0.85rem 1rem', fontFamily: 'monospace', fontSize: '0.95rem', color: '#a5b4fc', marginBottom: 10, lineHeight: 2 }}>
           P(X ≥ k) = Σ <span style={{ color: clr.warn }}>C(n,i)</span> × <span style={{ color: clr.good }}>p<sup>i</sup></span> × <span style={{ color: clr.bad }}>(1−p)<sup>n−i</sup></span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 8 }}>
           {[
-            { sym: 'n', col: clr.text, lbl: 'Filled seats', val: sBd },
+            { sym: 'n', col: clr.text, lbl: 'Board members', val: sBd },
             { sym: 'k', col: clr.warn, lbl: 'Quorum needed', val: sQ },
             { sym: 'p', col: clr.good, lbl: 'Attendance rate', val: `${sAtt}% = ${sP.toFixed(2)}` },
             { sym: 'C(n,i)', col: clr.warn, lbl: 'Combinations', val: 'n! / (i! × (n−i)!)' },
@@ -1936,7 +1938,7 @@ export default function App() {
                     filter:
                       'drop-shadow(0 0 1px #000) drop-shadow(2px 2px 0px #000) drop-shadow(4px 4px 0px #000) drop-shadow(6px 6px 0px #000)',
                     display: 'inline-block',
-                    fontSize: 'clamp(3rem, 12vw, 6rem',
+                    fontSize: 'clamp(3rem, 12vw, 6rem)',
                   }}
                 >
                   Q
@@ -2060,6 +2062,7 @@ export default function App() {
                     cursor: 'pointer',
                     fontSize: '0.72rem',
                     whiteSpace: 'nowrap',
+                    textAlign: 'right',
                     fontWeight: i === step ? 700 : 500,
                     display: 'flex',
                     alignItems: 'center',
@@ -2099,6 +2102,7 @@ export default function App() {
                 borderRadius: 10,
                 padding: '1.25rem',
                 minHeight: 300,
+                textAlign: 'left',
               }}
             >
               {explPages[step]}
@@ -2111,7 +2115,7 @@ export default function App() {
               }}
             >
               <button
-                onClick={() => setStep((prev) => Math.max(0, prev - 1))}
+                onClick={() => { setStep((prev) => Math.max(0, prev - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                 disabled={step === 0}
                 style={{
                   padding: '8px 18px',
@@ -2135,8 +2139,7 @@ export default function App() {
   </button>
 ) : (
   <button
-    onClick={() => setStep((prev) => Math.min(EXPL_STEPS.length - 1, prev + 1))}
-    style={{ padding: '8px 18px', borderRadius: 8, border: 'none', background: '#8b5cf6', color: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}
+  onClick={() => { setStep((prev) => Math.min(EXPL_STEPS.length - 1, prev + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}    style={{ padding: '8px 18px', borderRadius: 8, border: 'none', background: '#8b5cf6', color: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}
   >
     Next →
   </button>
