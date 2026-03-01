@@ -1992,7 +1992,7 @@ export default function App() {
           </span>
         </div>
         <div
-          style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}
+          style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 8 }}
         >
           {[
             { sym: 'n', col: clr.text, lbl: 'Filled seats', val: sBd },
@@ -2367,7 +2367,8 @@ export default function App() {
                     color:
                       i === step ? '#fff' : i < step ? '#94a3b8' : '#64748b',
                     cursor: 'pointer',
-                    fontSize: '0.78rem',
+                    fontSize: '0.72rem',
+                    whiteSpace: 'nowrap',
                     fontWeight: i === step ? 700 : 500,
                     display: 'flex',
                     alignItems: 'center',
