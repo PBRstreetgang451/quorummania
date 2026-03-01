@@ -833,11 +833,13 @@ const LANG_OPTIONS = Object.entries(TR).map(([code, t]) => ({
   name: t.name,
 }));
 const EXPL_STEPS = [
-  'The Problem',
-  'The Average Trap',
-  'Randomness',
-  'Live Simulation',
+  'What is quorum?',
+  'Why it matters',
+  'Board size & quorum',
+  'The average trap',
+  'Think of a coin flip',
   'The Math',
+  'Live Simulation',
   'Summary',
 ];
 
@@ -1529,409 +1531,314 @@ export default function App() {
   );
 
   const explPages = [
+    // Step 1 — What is quorum?
     <div key="i0">
-      <h3
-        style={{
-          fontSize: '1.2rem',
-          fontWeight: 700,
-          color: '#f8fafc',
-          marginBottom: 8,
-        }}
-      >
-        Why can't I just make sure enough people show up?
+      <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#f8fafc', marginBottom: 8 }}>
+        What is quorum?
       </h3>
       <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1rem' }}>
-        It seems simple: just make sure enough members come. The problem is you
-        can't <em>guarantee</em> who shows up to any given meeting. Life happens
-        — illness, travel, emergencies.
+        According to <em>Robert's Rules of Order, Newly Revised</em> (12th Ed., §3.3):
       </p>
-      <div
-        style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}
-      >
+      <div style={{ background: '#1e293b', borderLeft: '3px solid #f5a800', borderRadius: 8, padding: '0.9rem 1.1rem', marginBottom: '1rem' }}>
+        <p style={{ color: '#e2e8f0', fontStyle: 'italic', lineHeight: 1.7, margin: 0 }}>
+          "The minimum number of members who must be present at the meetings of a deliberative assembly for business to be validly transacted is the <strong>quorum</strong> of the assembly."
+        </p>
+      </div>
+      <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1rem' }}>
+        In plain terms: quorum is the threshold your board must hit before it can take any official action — votes, motions, binding decisions. No quorum, no business.
+      </p>
+      <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1.25rem' }}>
+        For most nonprofit and civic boards, quorum is defined in the bylaws as a simple majority. A 12-member board typically needs 7 present to proceed.
+      </p>
+      <SimCtrl />
+      <div style={{ ...crd(), marginTop: '1rem' }}>
+        <div style={{ fontSize: '0.75rem', color: clr.muted, marginBottom: 10 }}>
+          Board seats — quorum threshold highlighted
+        </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {Array.from({ length: sBd }, (_, i) => {
+            const isQuorum = i === sQ - 1;
+            const isFilled = i < sQ;
+            return (
+              <div key={i} style={{
+                width: 36, height: 36, borderRadius: '50%',
+                background: isFilled ? (isQuorum ? '#f5a800' : clr.good + '33') : '#1e293b',
+                border: `2px solid ${isQuorum ? '#f5a800' : isFilled ? clr.good : '#334155'}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '0.7rem', fontWeight: 700,
+                color: isFilled ? (isQuorum ? '#0f172a' : clr.good) : '#475569',
+              }}>
+                {i + 1}
+              </div>
+            );
+          })}
+        </div>
+        <div style={{ fontSize: '0.72rem', color: clr.dim, marginTop: 8 }}>
+          🟡 = quorum threshold seat · 🟢 = needed for quorum · ⚫ = additional members
+        </div>
+      </div>
+      <div style={{ marginTop: '1rem', fontSize: '0.75rem', color: '#475569' }}>
+        Source: <a href="https://robertsrules.com" target="_blank" rel="noopener noreferrer" style={{ color: '#6366f1' }}>robertsrules.com</a> — Robert's Rules of Order, Newly Revised, 12th Ed.
+      </div>
+    </div>,
+
+    // Step 2 — Why it matters
+    <div key="i1">
+      <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#f8fafc', marginBottom: 8 }}>
+        Why does quorum matter?
+      </h3>
+      <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1rem' }}>
+        Robert's Rules explains why quorum exists (12th Ed., §3.3):
+      </p>
+      <div style={{ background: '#1e293b', borderLeft: '3px solid #f5a800', borderRadius: 8, padding: '0.9rem 1.1rem', marginBottom: '1rem' }}>
+        <p style={{ color: '#e2e8f0', fontStyle: 'italic', lineHeight: 1.7, margin: 0 }}>
+          "The requirement of a quorum is a protection against totally unrepresentative action in the name of the body by an unduly small number of persons."
+        </p>
+      </div>
+      <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1.25rem' }}>
+        Quorum isn't bureaucratic red tape — it's a democratic safeguard. It ensures decisions represent the board as a whole, not just whoever happened to show up.
+      </p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10, marginBottom: '1.25rem' }}>
         {[
-          {
-            icon: '🎲',
-            t: 'Each meeting is uncertain',
-            d: "You can't guarantee who attends on any given day.",
-          },
-          {
-            icon: '📉',
-            t: 'Bad luck streaks happen',
-            d: 'Even reliable members occasionally miss several in a row.',
-          },
-          {
-            icon: '✅',
-            t: 'You need a buffer',
-            d: 'Average attendance must be higher than quorum to be safe.',
-          },
+          { icon: '🗳️', t: 'No votes', d: "Motions can't pass, resolutions can't be adopted." },
+          { icon: '⏰', t: 'Delays', d: 'Decisions get pushed to a future meeting.' },
+          { icon: '⚠️', t: 'Liability', d: 'Missed quorums can signal governance failure to funders and regulators.' },
         ].map(({ icon, t, d }) => (
           <div key={t} style={{ ...crd(), borderTop: '2px solid #6366f1' }}>
             <div style={{ fontSize: '1.5rem', marginBottom: 6 }}>{icon}</div>
-            <div
-              style={{
-                fontWeight: 700,
-                color: clr.text,
-                marginBottom: 4,
-                fontSize: '0.85rem',
-              }}
-            >
-              {t}
-            </div>
-            <div
-              style={{ color: clr.dim, fontSize: '0.78rem', lineHeight: 1.5 }}
-            >
-              {d}
-            </div>
+            <div style={{ fontWeight: 700, color: clr.text, marginBottom: 4, fontSize: '0.85rem' }}>{t}</div>
+            <div style={{ color: clr.dim, fontSize: '0.78rem', lineHeight: 1.5 }}>{d}</div>
           </div>
         ))}
       </div>
+      <div style={{ background: '#450a0a', border: '1px solid #f87171', borderRadius: 8, padding: '0.85rem 1rem', fontSize: '0.85rem', color: '#fca5a5', lineHeight: 1.6 }}>
+        Missing quorum once is an inconvenience. Missing it repeatedly is a governance crisis.
+      </div>
+      <div style={{ marginTop: '1rem', fontSize: '0.75rem', color: '#475569' }}>
+        Source: <a href="https://robertsrules.com" target="_blank" rel="noopener noreferrer" style={{ color: '#6366f1' }}>robertsrules.com</a> — Robert's Rules of Order, Newly Revised, 12th Ed.
+      </div>
     </div>,
-    <div key="i1">
-      <h3
-        style={{
-          fontSize: '1.2rem',
-          fontWeight: 700,
-          color: '#f8fafc',
-          marginBottom: 8,
-        }}
-      >
-        The "Average Trap"
+
+    // Step 3 — Board size & quorum
+    <div key="i2">
+      <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#f8fafc', marginBottom: 8 }}>
+        How does board size affect quorum?
       </h3>
       <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1rem' }}>
-        A common mistake:{' '}
-        <em>
-          "Our members attend ~60% of meetings and we only need 58% for quorum —
-          we're fine!"
-        </em>{' '}
-        If your average lands right at quorum, you'll fail roughly{' '}
-        <strong style={{ color: clr.bad }}>half the time</strong>.
+        Here's guidance most boards overlook. Robert's Rules (12th Ed., §3.7) says a quorum provision:
+      </p>
+      <div style={{ background: '#1e293b', borderLeft: '3px solid #f5a800', borderRadius: 8, padding: '0.9rem 1.1rem', marginBottom: '1rem' }}>
+        <p style={{ color: '#e2e8f0', fontStyle: 'italic', lineHeight: 1.7, margin: 0 }}>
+          "should approximate the largest number that can be depended on to attend any meeting except in very bad weather or other extremely unfavorable conditions."
+        </p>
+      </div>
+      <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1.25rem' }}>
+        Robert's Rules isn't saying set quorum at your aspirational attendance. It's saying set it at your <em>realistic floor</em> — the number you can count on even on a bad day. Most boards do the opposite.
+      </p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: '1.25rem' }}>
+        {[
+          {
+            myth: '❌ "A smaller board makes quorum easier."',
+            truth: 'Not necessarily. With fewer members, each absence hits harder. A single no-show on a 6-member board needing 4 is already a near-miss.',
+          },
+          {
+            myth: '❌ "A bigger board makes quorum harder."',
+            truth: 'Actually the opposite. More members means more statistical buffer — as long as your attendance rate stays consistent, a larger board gives you more room for the inevitable absences.',
+          },
+        ].map(({ myth, truth }) => (
+          <div key={myth} style={{ ...crd(), borderLeft: '3px solid #f87171' }}>
+            <div style={{ fontWeight: 700, color: '#fca5a5', marginBottom: 6, fontSize: '0.88rem' }}>{myth}</div>
+            <div style={{ color: clr.dim, fontSize: '0.82rem', lineHeight: 1.6 }}>{truth}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: '#475569' }}>
+        Source: <a href="https://robertsrules.com" target="_blank" rel="noopener noreferrer" style={{ color: '#6366f1' }}>robertsrules.com</a> — Robert's Rules of Order, Newly Revised, 12th Ed.
+      </div>
+    </div>,
+
+    // Step 4 — The average trap
+    <div key="i3">
+      <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#f8fafc', marginBottom: 8 }}>
+        Why average attendance isn't enough
+      </h3>
+      <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1rem' }}>
+        Suppose your board has 10 members and quorum is 6. Your members attend an average of 60% of meetings. You might think: 60% of 10 is exactly 6 — we're right at quorum, we should be fine most of the time!
+      </p>
+      <div style={{ background: '#450a0a', border: '1px solid #f87171', borderRadius: 8, padding: '0.85rem 1rem', fontSize: '0.88rem', color: '#fca5a5', lineHeight: 1.6, marginBottom: '1rem', fontWeight: 700 }}>
+        But that's the trap.
+      </div>
+      <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1rem' }}>
+        Your average tells you what happens <em>across all meetings over time</em>. It says nothing about what happens at <em>this specific meeting</em>. Some months everyone shows up. Some months three people are traveling, one is sick, and another has a family emergency — all at the same time.
+      </p>
+      <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1.25rem' }}>
+        Quorum doesn't grade on a curve. It doesn't care that your annual average looks good. It only asks one question: <strong style={{ color: clr.text }}>are enough people here right now?</strong>
       </p>
       <SimCtrl />
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: '1rem' }}>
         <div style={{ ...crd(), borderLeft: `3px solid ${clr.neutral}` }}>
-          <div
-            style={{ fontSize: '0.75rem', color: clr.muted, marginBottom: 3 }}
-          >
-            Expected average attendees
-          </div>
-          <div style={{ fontSize: '2.2rem', fontWeight: 800, color: clr.text }}>
-            {sAvg}
-          </div>
-          <div style={{ fontSize: '0.78rem', color: clr.dim }}>
-            out of {sBd} at {sAtt}%
-          </div>
+          <div style={{ fontSize: '0.75rem', color: clr.muted, marginBottom: 3 }}>Expected average attendees</div>
+          <div style={{ fontSize: '2.2rem', fontWeight: 800, color: clr.text }}>{sAvg}</div>
+          <div style={{ fontSize: '0.78rem', color: clr.dim }}>out of {sBd} at {sAtt}%</div>
         </div>
-        <div
-          style={{
-            ...crd(),
-            borderLeft: `3px solid ${
-              sTheo >= 95 ? clr.good : sTheo >= 70 ? clr.warn : clr.bad
-            }`,
-          }}
-        >
-          <div
-            style={{ fontSize: '0.75rem', color: clr.muted, marginBottom: 3 }}
-          >
-            Actual probability of quorum
-          </div>
-          <div
-            style={{
-              fontSize: '2.2rem',
-              fontWeight: 800,
-              color: sTheo >= 95 ? clr.good : sTheo >= 70 ? clr.warn : clr.bad,
-            }}
-          >
-            {sTheo}%
-          </div>
-          <div style={{ fontSize: '0.78rem', color: clr.dim }}>
-            chance per meeting
-          </div>
+        <div style={{ ...crd(), borderLeft: `3px solid ${sTheo >= 95 ? clr.good : sTheo >= 70 ? clr.warn : clr.bad}` }}>
+          <div style={{ fontSize: '0.75rem', color: clr.muted, marginBottom: 3 }}>Actual probability of quorum</div>
+          <div style={{ fontSize: '2.2rem', fontWeight: 800, color: sTheo >= 95 ? clr.good : sTheo >= 70 ? clr.warn : clr.bad }}>{sTheo}%</div>
+          <div style={{ fontSize: '0.78rem', color: clr.dim }}>chance per meeting</div>
         </div>
       </div>
       {sAvg >= sQ && sTheo < 80 && (
-        <div
-          style={{
-            background: '#450a0a',
-            border: '1px solid #f87171',
-            borderRadius: 8,
-            padding: '0.65rem 0.9rem',
-            marginTop: 10,
-            fontSize: '0.83rem',
-          }}
-        >
+        <div style={{ background: '#450a0a', border: '1px solid #f87171', borderRadius: 8, padding: '0.65rem 0.9rem', marginTop: 10, fontSize: '0.83rem' }}>
           <strong style={{ color: clr.bad }}>⚠️ The trap in action!</strong>
-          <span style={{ color: '#fca5a5' }}>
-            {' '}
-            Average ({sAvg}) is above quorum ({sQ}), but quorum is only reached{' '}
-            {sTheo}% of the time.
-          </span>
+          <span style={{ color: '#fca5a5' }}> Average ({sAvg}) is above quorum ({sQ}), but quorum is only reached {sTheo}% of the time.</span>
         </div>
       )}
     </div>,
-    <div key="i2">
-      <h3
-        style={{
-          fontSize: '1.2rem',
-          fontWeight: 700,
-          color: '#f8fafc',
-          marginBottom: 8,
-        }}
-      >
-        Understanding Randomness
+
+    // Step 5 — Think of a coin flip
+    <div key="i4">
+      <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#f8fafc', marginBottom: 8 }}>
+        Think of it like a coin flip
       </h3>
       <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1rem' }}>
-        Think of each member as flipping a weighted coin before every meeting.
-        You never know which flip will be tails.
+        Here's a way to make the randomness concrete.
+      </p>
+      <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1rem' }}>
+        Imagine each board member is a weighted coin. Before every meeting, flip all the coins. Heads means they show up. Tails means something came up and they can't make it.
+      </p>
+      <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1rem' }}>
+        A reliable member is a coin that lands heads 85% of the time. A busier member might land heads 60% of the time. Nobody is being irresponsible — that's just life.
+      </p>
+      <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1.25rem' }}>
+        Now flip all the coins at once. Most of the time you get a good spread. But sometimes several tails cluster together in the same meeting — not because anyone failed, just because that's how randomness works. <strong style={{ color: clr.text }}>Bad streaks are inevitable. The question is whether your board is built to survive them.</strong>
       </p>
       <SimCtrl />
-      <div style={{ ...crd() }}>
-        <div
-          style={{ fontSize: '0.75rem', color: clr.muted, marginBottom: 10 }}
-        >
-          One random meeting at {sAtt}% attendance:
+      <div style={{ ...crd(), marginTop: '1rem' }}>
+        <div style={{ fontSize: '0.75rem', color: clr.muted, marginBottom: 10 }}>
+          One random meeting at {sAtt}% attendance — each circle is a board member:
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
           {Array.from({ length: sBd }, (_, i) => {
             const a = Math.random() < sP;
             return (
-              <div
-                key={i}
-                style={{
-                  width: 38,
-                  height: 38,
-                  borderRadius: '50%',
-                  background: a ? clr.good + '33' : clr.bad + '22',
-                  border: `2px solid ${a ? clr.good : clr.bad}`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '1rem',
-                }}
-              >
+              <div key={i} style={{
+                width: 38, height: 38, borderRadius: '50%',
+                background: a ? clr.good + '33' : clr.bad + '22',
+                border: `2px solid ${a ? clr.good : clr.bad}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '1rem',
+              }}>
                 {a ? '✓' : '✗'}
               </div>
             );
           })}
         </div>
         <div style={{ fontSize: '0.72rem', color: clr.dim, marginTop: 8 }}>
-          <span style={{ color: clr.good }}>✓ attends</span> ·{' '}
-          <span style={{ color: clr.bad }}>✗ misses</span> · Adjust sliders to
-          see a new random outcome.
+          <span style={{ color: clr.good }}>✓ attends</span> · <span style={{ color: clr.bad }}>✗ misses</span> · Adjust the sliders above to see a new random outcome.
         </div>
       </div>
     </div>,
-    <div key="i3">
-      <h3
-        style={{
-          fontSize: '1.2rem',
-          fontWeight: 700,
-          color: '#f8fafc',
-          marginBottom: 8,
-        }}
-      >
+
+    // Step 6 — The Math
+    <div key="i5">
+      <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#f8fafc', marginBottom: 8 }}>
+        The Math Behind It
+      </h3>
+      <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1rem' }}>
+        What you just saw with the coins has a name: the <strong style={{ color: clr.text }}>binomial distribution</strong>. It's the formula that calculates exactly how likely you are to get a bad streak — and by extension, how likely your board is to make quorum on any given meeting.
+      </p>
+      <SimCtrl />
+      <div style={{ ...crd(), marginBottom: 10 }}>
+        <div style={{ background: '#0f172a', borderRadius: 8, padding: '0.85rem 1rem', fontFamily: 'monospace', fontSize: '0.95rem', color: '#a5b4fc', marginBottom: 10, lineHeight: 2 }}>
+          P(X ≥ k) = Σ <span style={{ color: clr.warn }}>C(n,i)</span> × <span style={{ color: clr.good }}>p<sup>i</sup></span> × <span style={{ color: clr.bad }}>(1−p)<sup>n−i</sup></span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 8 }}>
+          {[
+            { sym: 'n', col: clr.text, lbl: 'Filled seats', val: sBd },
+            { sym: 'k', col: clr.warn, lbl: 'Quorum needed', val: sQ },
+            { sym: 'p', col: clr.good, lbl: 'Attendance rate', val: `${sAtt}% = ${sP.toFixed(2)}` },
+            { sym: 'C(n,i)', col: clr.warn, lbl: 'Combinations', val: 'n! / (i! × (n−i)!)' },
+          ].map(({ sym, col, lbl, val }) => (
+            <div key={sym} style={{ background: '#0f172a', borderRadius: 6, padding: '0.5rem 0.75rem', display: 'flex', gap: 8, alignItems: 'center' }}>
+              <span style={{ fontFamily: 'monospace', fontWeight: 700, color: col, fontSize: '0.95rem', minWidth: 52 }}>{sym}</span>
+              <div>
+                <div style={{ fontSize: '0.7rem', color: clr.muted }}>{lbl}</div>
+                <div style={{ fontSize: '0.82rem', color: clr.text, fontWeight: 600 }}>{val}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ ...crd({ borderLeft: `3px solid ${sTheo >= 95 ? clr.good : clr.warn}` }) }}>
+        <span style={{ color: clr.dim, lineHeight: 1.7, fontSize: '0.88rem' }}>
+          With <strong style={{ color: clr.text }}>{sBd}</strong> members at <strong style={{ color: clr.text }}>{sAtt}%</strong>, probability of reaching quorum (<strong style={{ color: clr.text }}>{sQ}</strong>) is <strong style={{ color: sTheo >= 95 ? clr.good : sTheo >= 70 ? clr.warn : clr.bad, fontSize: '1.1rem' }}>{sTheo}%</strong>.
+        </span>
+      </div>
+    </div>,
+
+    // Step 7 — Live Simulation
+    <div key="i6">
+      <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#f8fafc', marginBottom: 8 }}>
         Live Simulation
       </h3>
       <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1rem' }}>
-        Run hundreds of simulated meetings and watch what actually happens.
+        Run hundreds of simulated meetings and watch what actually happens. The simulated rate will converge to exactly what the formula predicts — every time.
       </p>
       <SimCtrl />
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
-          marginBottom: '1rem',
-          flexWrap: 'wrap',
-        }}
-      >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '1rem', flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', gap: 6 }}>
           {[25, 50, 100, 500].map((n) => (
-            <button
-              key={n}
-              onClick={() => setSN(n)}
-              style={{
-                padding: '4px 11px',
-                borderRadius: 16,
-                border: `1px solid ${sN === n ? '#6366f1' : '#334155'}`,
-                background: sN === n ? '#6366f133' : 'transparent',
-                color: sN === n ? '#a5b4fc' : '#64748b',
-                cursor: 'pointer',
-                fontSize: '0.78rem',
-                fontWeight: 600,
-              }}
-            >
+            <button key={n} onClick={() => setSN(n)} style={{ padding: '4px 11px', borderRadius: 16, border: `1px solid ${sN === n ? '#6366f1' : '#334155'}`, background: sN === n ? '#6366f133' : 'transparent', color: sN === n ? '#a5b4fc' : '#64748b', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 600 }}>
               {n}
             </button>
           ))}
         </div>
-        <button
-          onClick={runSim}
-          disabled={sRun}
-          style={{
-            padding: '7px 18px',
-            borderRadius: 8,
-            background: sRun ? '#334155' : '#6366f1',
-            border: 'none',
-            color: '#fff',
-            cursor: sRun ? 'not-allowed' : 'pointer',
-            fontWeight: 700,
-            fontSize: '0.85rem',
-          }}
-        >
-          {sRun
-            ? `Running... (${sRes.length}/${sN})`
-            : sDone
-            ? '▶ Run Again'
-            : '▶ Run Simulation'}
+        <button onClick={runSim} disabled={sRun} style={{ padding: '7px 18px', borderRadius: 8, background: sRun ? '#334155' : '#6366f1', border: 'none', color: '#fff', cursor: sRun ? 'not-allowed' : 'pointer', fontWeight: 700, fontSize: '0.85rem' }}>
+          {sRun ? `Running... (${sRes.length}/${sN})` : sDone ? '▶ Run Again' : '▶ Run Simulation'}
         </button>
       </div>
       {sRes.length > 0 ? (
         <>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr 1fr',
-              gap: 8,
-              marginBottom: 10,
-            }}
-          >
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 10 }}>
             {[
               { lbl: 'Simulated', val: sRes.length, col: clr.neutral },
-              {
-                lbl: 'Quorum ✅',
-                val: sRes.filter((r) => r >= sQ).length,
-                col: clr.good,
-              },
-              {
-                lbl: 'Failed ❌',
-                val: sRes.filter((r) => r < sQ).length,
-                col: clr.bad,
-              },
+              { lbl: 'Quorum ✅', val: sRes.filter((r) => r >= sQ).length, col: clr.good },
+              { lbl: 'Failed ❌', val: sRes.filter((r) => r < sQ).length, col: clr.bad },
             ].map(({ lbl, val, col }) => (
-              <div
-                key={lbl}
-                style={{
-                  ...crd({ padding: '0.75rem' }),
-                  borderTop: `2px solid ${col}`,
-                }}
-              >
-                <div style={{ fontSize: '0.72rem', color: clr.muted }}>
-                  {lbl}
-                </div>
-                <div
-                  style={{ fontSize: '1.5rem', fontWeight: 800, color: col }}
-                >
-                  {val}
-                </div>
+              <div key={lbl} style={{ ...crd({ padding: '0.75rem' }), borderTop: `2px solid ${col}` }}>
+                <div style={{ fontSize: '0.72rem', color: clr.muted }}>{lbl}</div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: col }}>{val}</div>
               </div>
             ))}
           </div>
           {sDone && (
-            <div
-              style={{
-                ...crd({ padding: '0.85rem' }),
-                borderLeft: `3px solid ${
-                  Math.abs((sRate || 0) - sTheo) < 6 ? clr.good : clr.warn
-                }`,
-                marginBottom: 10,
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: 8,
-              }}
-            >
+            <div style={{ ...crd({ padding: '0.85rem' }), borderLeft: `3px solid ${Math.abs((sRate || 0) - sTheo) < 6 ? clr.good : clr.warn}`, marginBottom: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
               <div>
-                <div style={{ fontSize: '0.72rem', color: clr.muted }}>
-                  Simulated rate
-                </div>
-                <div
-                  style={{
-                    fontSize: '1.4rem',
-                    fontWeight: 800,
-                    color: clr.good,
-                  }}
-                >
-                  {sRate}%
-                </div>
+                <div style={{ fontSize: '0.72rem', color: clr.muted }}>Simulated rate</div>
+                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: clr.good }}>{sRate}%</div>
               </div>
               <div style={{ color: clr.muted }}>vs</div>
               <div>
-                <div style={{ fontSize: '0.72rem', color: clr.muted }}>
-                  Formula predicts
-                </div>
-                <div
-                  style={{
-                    fontSize: '1.4rem',
-                    fontWeight: 800,
-                    color: clr.neutral,
-                  }}
-                >
-                  {sTheo}%
-                </div>
+                <div style={{ fontSize: '0.72rem', color: clr.muted }}>Formula predicts</div>
+                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: clr.neutral }}>{sTheo}%</div>
               </div>
-              <div
-                style={{
-                  fontSize: '0.78rem',
-                  color: clr.dim,
-                  maxWidth: 140,
-                  lineHeight: 1.5,
-                }}
-              >
-                {Math.abs((sRate || 0) - sTheo) < 8
-                  ? '✅ The math works!'
-                  : 'Run more meetings to converge.'}
+              <div style={{ fontSize: '0.78rem', color: clr.dim, maxWidth: 140, lineHeight: 1.5 }}>
+                {Math.abs((sRate || 0) - sTheo) < 8 ? '✅ The math works!' : 'Run more meetings to converge.'}
               </div>
             </div>
           )}
           <div style={{ ...crd() }}>
-            <div
-              style={{ fontSize: '0.72rem', color: clr.muted, marginBottom: 6 }}
-            >
-              Attendees per meeting
-            </div>
+            <div style={{ fontSize: '0.72rem', color: clr.muted, marginBottom: 6 }}>Attendees per meeting</div>
             <ResponsiveContainer width="100%" height={180}>
-              <BarChart
-                data={sHist}
-                margin={{ top: 2, right: 8, bottom: 2, left: 0 }}
-              >
+              <BarChart data={sHist} margin={{ top: 2, right: 8, bottom: 2, left: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" />
-                <XAxis
-                  dataKey="attendees"
-                  tick={{ fill: clr.muted, fontSize: 10 }}
-                />
+                <XAxis dataKey="attendees" tick={{ fill: clr.muted, fontSize: 10 }} />
                 <YAxis tick={{ fill: clr.muted, fontSize: 10 }} />
-                <Tooltip
-                  contentStyle={{
-                    background: '#0f172a',
-                    border: '1px solid #334155',
-                    borderRadius: 8,
-                    color: clr.text,
-                  }}
-                  formatter={(v, _, p) => [
-                    `${v} meetings`,
-                    p.payload.attendees >= sQ ? '✅ Quorum' : '❌ No quorum',
-                  ]}
-                />
-                <ReferenceLine
-                  x={sQ}
-                  stroke={clr.warn}
-                  strokeDasharray="4 4"
-                  label={{
-                    value: `Q(${sQ})`,
-                    fill: clr.warn,
-                    fontSize: 9,
-                    position: 'top',
-                  }}
-                />
+                <Tooltip contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 8, color: clr.text }} formatter={(v, _, p) => [`${v} meetings`, p.payload.attendees >= sQ ? '✅ Quorum' : '❌ No quorum']} />
+                <ReferenceLine x={sQ} stroke={clr.warn} strokeDasharray="4 4" label={{ value: `Q(${sQ})`, fill: clr.warn, fontSize: 9, position: 'top' }} />
                 <Bar dataKey="count" radius={[3, 3, 0, 0]}>
                   {sHist.map((e, i) => (
-                    <Cell
-                      key={i}
-                      fill={
-                        e.attendees >= sQ ? clr.good + 'bb' : clr.bad + 'bb'
-                      }
-                    />
+                    <Cell key={i} fill={e.attendees >= sQ ? clr.good + 'bb' : clr.bad + 'bb'} />
                   ))}
                 </Bar>
               </BarChart>
@@ -1939,261 +1846,45 @@ export default function App() {
           </div>
         </>
       ) : (
-        <div
-          style={{
-            ...crd(),
-            textAlign: 'center',
-            padding: '2rem',
-            color: clr.muted,
-            fontSize: '0.88rem',
-          }}
-        >
+        <div style={{ ...crd(), textAlign: 'center', padding: '2rem', color: clr.muted, fontSize: '0.88rem' }}>
           Press "Run Simulation" to see results
         </div>
       )}
     </div>,
-    <div key="i4">
-      <h3
-        style={{
-          fontSize: '1.2rem',
-          fontWeight: 700,
-          color: '#f8fafc',
-          marginBottom: 8,
-        }}
-      >
-        The Math Behind It
-      </h3>
-      <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1rem' }}>
-        The tool uses the{' '}
-        <strong style={{ color: clr.text }}>binomial distribution</strong> — a
-        proven formula for counting successes in independent yes/no trials.
-      </p>
-      <SimCtrl />
-      <div style={{ ...crd(), marginBottom: 10 }}>
-        <div
-          style={{
-            background: '#0f172a',
-            borderRadius: 8,
-            padding: '0.85rem 1rem',
-            fontFamily: 'monospace',
-            fontSize: '0.95rem',
-            color: '#a5b4fc',
-            marginBottom: 10,
-            lineHeight: 2,
-          }}
-        >
-          P(X ≥ k) = Σ <span style={{ color: clr.warn }}>C(n,i)</span> ×{' '}
-          <span style={{ color: clr.good }}>
-            p<sup>i</sup>
-          </span>{' '}
-          ×{' '}
-          <span style={{ color: clr.bad }}>
-            (1−p)<sup>n−i</sup>
-          </span>
-        </div>
-        <div
-          style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 8 }}
-        >
-          {[
-            { sym: 'n', col: clr.text, lbl: 'Filled seats', val: sBd },
-            { sym: 'k', col: clr.warn, lbl: 'Quorum needed', val: sQ },
-            {
-              sym: 'p',
-              col: clr.good,
-              lbl: 'Attendance rate',
-              val: `${sAtt}% = ${sP.toFixed(2)}`,
-            },
-            {
-              sym: 'C(n,i)',
-              col: clr.warn,
-              lbl: 'Combinations',
-              val: 'n! / (i! × (n−i)!)',
-            },
-          ].map(({ sym, col, lbl, val }) => (
-            <div
-              key={sym}
-              style={{
-                background: '#0f172a',
-                borderRadius: 6,
-                padding: '0.5rem 0.75rem',
-                display: 'flex',
-                gap: 8,
-                alignItems: 'center',
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: 'monospace',
-                  fontWeight: 700,
-                  color: col,
-                  fontSize: '0.95rem',
-                  minWidth: 52,
-                }}
-              >
-                {sym}
-              </span>
-              <div>
-                <div style={{ fontSize: '0.7rem', color: clr.muted }}>
-                  {lbl}
-                </div>
-                <div
-                  style={{
-                    fontSize: '0.82rem',
-                    color: clr.text,
-                    fontWeight: 600,
-                  }}
-                >
-                  {val}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div
-        style={{
-          ...crd({
-            borderLeft: `3px solid ${sTheo >= 95 ? clr.good : clr.warn}`,
-          }),
-        }}
-      >
-        <span style={{ color: clr.dim, lineHeight: 1.7, fontSize: '0.88rem' }}>
-          With <strong style={{ color: clr.text }}>{sBd}</strong> members at{' '}
-          <strong style={{ color: clr.text }}>{sAtt}%</strong>, probability of
-          reaching quorum (<strong style={{ color: clr.text }}>{sQ}</strong>) is{' '}
-          <strong
-            style={{
-              color: sTheo >= 95 ? clr.good : sTheo >= 70 ? clr.warn : clr.bad,
-              fontSize: '1.1rem',
-            }}
-          >
-            {sTheo}%
-          </strong>
-          .
-        </span>
-      </div>
-    </div>,
-    <div key="i5">
-      <h3
-        style={{
-          fontSize: '1.2rem',
-          fontWeight: 700,
-          color: '#f8fafc',
-          marginBottom: 8,
-        }}
-      >
+
+    // Step 8 — Summary
+    <div key="i7">
+      <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#f8fafc', marginBottom: 8 }}>
         Putting It All Together
       </h3>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 10,
-          marginBottom: '1.25rem',
-        }}
-      >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: '1.25rem' }}>
         {[
-          {
-            n: '1',
-            col: clr.neutral,
-            t: 'Attendance is random',
-            b: 'Even reliable members miss meetings unpredictably.',
-          },
-          {
-            n: '2',
-            col: clr.warn,
-            t: 'Average ≠ guaranteed quorum',
-            b: "If average equals quorum, you'll fail ~50% of the time.",
-          },
-          {
-            n: '3',
-            col: clr.good,
-            t: 'You need a buffer',
-            b: 'Average attendance must be meaningfully higher than quorum.',
-          },
-          {
-            n: '4',
-            col: clr.neutral,
-            t: 'Vacancies matter',
-            b: 'Vacant seats shrink the pool of possible attendees and can make quorum impossible.',
-          },
-          {
-            n: '5',
-            col: clr.neutral,
-            t: 'The math is proven',
-            b: 'The binomial distribution is used in medicine, engineering, and finance for exactly this.',
-          },
+          { n: '1', col: clr.neutral, t: 'Quorum is a democratic safeguard', b: "It ensures decisions represent the full board — not just whoever showed up." },
+          { n: '2', col: clr.warn, t: 'Attendance is random', b: 'Even reliable members miss meetings unpredictably. Bad streaks happen.' },
+          { n: '3', col: clr.bad, t: 'Average ≠ guaranteed quorum', b: "If average equals quorum, you'll fail roughly half the time." },
+          { n: '4', col: clr.good, t: 'You need a buffer', b: 'Average attendance must be meaningfully higher than quorum to be safe.' },
+          { n: '5', col: clr.neutral, t: 'Board size cuts both ways', b: 'Smaller boards feel each absence more. Larger boards have more statistical buffer.' },
+          { n: '6', col: clr.neutral, t: 'The math is proven', b: 'The binomial distribution is used in medicine, engineering, and finance for exactly this kind of problem.' },
         ].map(({ n, col, t, b }) => (
-          <div
-            key={n}
-            style={{
-              ...crd({ padding: '0.9rem 1.1rem' }),
-              display: 'flex',
-              gap: 12,
-              alignItems: 'flex-start',
-            }}
-          >
-            <div
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: '50%',
-                background: col + '33',
-                border: `2px solid ${col}`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 800,
-                color: col,
-                flexShrink: 0,
-                fontSize: '0.82rem',
-              }}
-            >
+          <div key={n} style={{ ...crd({ padding: '0.9rem 1.1rem' }), display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+            <div style={{ width: 28, height: 28, borderRadius: '50%', background: col + '33', border: `2px solid ${col}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: col, flexShrink: 0, fontSize: '0.82rem' }}>
               {n}
             </div>
             <div>
-              <div
-                style={{
-                  fontWeight: 700,
-                  color: clr.text,
-                  marginBottom: 3,
-                  fontSize: '0.88rem',
-                }}
-              >
-                {t}
-              </div>
-              <div
-                style={{ color: clr.dim, fontSize: '0.8rem', lineHeight: 1.5 }}
-              >
-                {b}
-              </div>
+              <div style={{ fontWeight: 700, color: clr.text, marginBottom: 3, fontSize: '0.88rem' }}>{t}</div>
+              <div style={{ color: clr.dim, fontSize: '0.8rem', lineHeight: 1.5 }}>{b}</div>
             </div>
           </div>
         ))}
       </div>
-      <div
-        style={{
-          background: 'linear-gradient(135deg,#312e81,#1e1b4b)',
-          borderRadius: 10,
-          padding: '1rem 1.25rem',
-          border: '1px solid #4338ca',
-        }}
-      >
-        <div
-          style={{
-            fontWeight: 700,
-            color: '#a5b4fc',
-            marginBottom: 4,
-            fontSize: '0.88rem',
-          }}
-        >
-          Still skeptical?
-        </div>
+      <div style={{ background: 'linear-gradient(135deg,#312e81,#1e1b4b)', borderRadius: 10, padding: '1rem 1.25rem', border: '1px solid #4338ca', marginBottom: '1rem' }}>
+        <div style={{ fontWeight: 700, color: '#a5b4fc', marginBottom: 4, fontSize: '0.88rem' }}>Now you have the tools.</div>
         <div style={{ color: '#c7d2fe', fontSize: '0.82rem', lineHeight: 1.6 }}>
-          Go to the <strong>Live Simulation</strong> tab and run 500 meetings.
-          The simulated rate will converge to exactly what the formula predicts
-          — every time.
+          Stop guessing. Use the calculators below to find your board's real numbers — and build a quorum strategy that actually holds up.
         </div>
+      </div>
+      <div style={{ fontSize: '0.75rem', color: '#475569' }}>
+        Parliamentary authority: <a href="https://robertsrules.com" target="_blank" rel="noopener noreferrer" style={{ color: '#6366f1' }}>robertsrules.com</a> — Robert's Rules of Order, Newly Revised, 12th Ed.
       </div>
     </div>,
   ];
@@ -2435,30 +2126,25 @@ export default function App() {
               >
                 ← Previous
               </button>
-              <button
-                onClick={() =>
-                  setStep((prev) => Math.min(EXPL_STEPS.length - 1, prev + 1))
-                }
-                disabled={step === EXPL_STEPS.length - 1}
-                style={{
-                  padding: '8px 18px',
-                  borderRadius: 8,
-                  border: 'none',
-                  background:
-                    step === EXPL_STEPS.length - 1 ? '#334155' : '#8b5cf6',
-                  color: '#fff',
-                  cursor:
-                    step === EXPL_STEPS.length - 1 ? 'not-allowed' : 'pointer',
-                  fontWeight: 600,
-                  fontSize: '0.85rem',
-                }}
-              >
-                Next →
-              </button>
-            </div>
+              {step === EXPL_STEPS.length - 1 ? (
+  <button
+    onClick={() => document.getElementById('calculators')?.scrollIntoView({ behavior: 'smooth' })}
+    style={{ padding: '8px 18px', borderRadius: 8, border: 'none', background: '#f5a800', color: '#0f172a', cursor: 'pointer', fontWeight: 700, fontSize: '0.85rem' }}
+  >
+    Use the Calculators ↓
+  </button>
+) : (
+  <button
+    onClick={() => setStep((prev) => Math.min(EXPL_STEPS.length - 1, prev + 1))}
+    style={{ padding: '8px 18px', borderRadius: 8, border: 'none', background: '#8b5cf6', color: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}
+  >
+    Next →
+  </button>
+)}   </div>
           </Collapsible>
 
           <Collapsible
+          id="calculators"
             title={tr.calc2Title}
             subtitle={tr.calc2Sub}
             icon="📊"
