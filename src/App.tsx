@@ -1282,11 +1282,11 @@ export default function App() {
   const [c1Open, setC1Open] = useState(false);
   const [c2Open, setC2Open] = useState(false);
 
-  const [c1Board, setC1Board] = useState(12);
+  const [c1Board, setC1Board] = useState(10);
   const [c1Vac, setC1Vac] = useState(0);
   const [c1Basis, setC1Basis] = useState('total');
   const [c1Type, setC1Type] = useState('majority');
-  const [c1Fix, setC1Fix] = useState(7);
+  const [c1Fix, setC1Fix] = useState(6);
   const [c1FN, setC1FN] = useState(2);
   const [c1FD, setC1FD] = useState(3);
   const [c1Pct, setC1Pct] = useState(60);
@@ -1340,11 +1340,11 @@ export default function App() {
     return null;
   };
 
-  const [c2Board, setC2Board] = useState(12);
+  const [c2Board, setC2Board] = useState(10);
   const [c2Vac, setC2Vac] = useState(0);
   const [c2Basis, setC2Basis] = useState('total');
   const [c2Type, setC2Type] = useState('majority');
-  const [c2Fix, setC2Fix] = useState(7);
+  const [c2Fix, setC2Fix] = useState(6);
   const [c2FN, setC2FN] = useState(2);
   const [c2FD, setC2FD] = useState(3);
   const [c2Pct, setC2Pct] = useState(60);
@@ -1549,7 +1549,7 @@ export default function App() {
         In plain terms: quorum is the threshold your board must hit before it can take any official action — votes, motions, binding decisions. No quorum, no business.
       </p>
       <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1.25rem' }}>
-        For most nonprofit and civic boards, quorum is defined in the bylaws as a simple majority. A 12-member board typically needs 7 present to proceed.
+        For most nonprofit and civic boards, quorum is defined in the bylaws as a simple majority. A 10-member board typically needs 6 present to proceed.
       </p>
       <div style={{ ...crd(), marginTop: '1rem' }}>
         <div style={{ fontSize: '0.75rem', color: clr.muted, marginBottom: 10 }}>
@@ -1659,7 +1659,7 @@ export default function App() {
     // Step 4 — The average trap
     <div key="i3">
       <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#f8fafc', marginBottom: 8 }}>
-        Why average attendance isn't enough
+        Why is just enough not enough?
       </h3>
       <p style={{ color: clr.dim, lineHeight: 1.7, marginBottom: '1rem' }}>
         Suppose your board has 10 members and quorum is 6. Your members attend an average of 60% of meetings. You might think: 60% of 10 is exactly 6 — we're right at quorum, we should be fine most of the time!
@@ -1691,6 +1691,22 @@ export default function App() {
           <span style={{ color: '#fca5a5' }}> Average ({sAvg}) is above quorum ({sQ}), but quorum is only reached {sTheo}% of the time.</span>
         </div>
       )}
+      <div style={{ background: '#0f172a', border: '1px solid #6366f1', borderRadius: 8, padding: '0.85rem 1rem', marginTop: 12 }}>
+        <div style={{ fontWeight: 700, color: '#a5b4fc', marginBottom: 6, fontSize: '0.88rem' }}>One Solution: Formal Attendance Requirements</div>
+        <p style={{ color: clr.dim, fontSize: '0.82rem', lineHeight: 1.6, marginBottom: 8 }}>
+        Some boards address the average trap not just through quorum rules, but by holding individual members accountable. Metro Nashville's Municipal Code, for example, defines "excessive absences" as missing two-thirds of meetings over a one-year period — and ties that standard to meetings where quorum is required.
+        </p>
+        <p style={{ color: clr.dim, fontSize: '0.82rem', lineHeight: 1.6, marginBottom: 8 }}>
+          Setting an explicit attendance expectation in your bylaws shifts the conversation from "did we make quorum today?" to "are our members meeting their obligations year-round?"
+        </p>
+        <div style={{ fontWeight: 700, color: '#a5b4fc', marginBottom: 6, fontSize: '0.88rem' }}>But is one-third enough?</div>
+        <p style={{ color: clr.dim, fontSize: '0.82rem', lineHeight: 1.6, marginBottom: 8 }}>
+          Missing two-thirds of meetings means a member only needs to show up 34% of the time to avoid removal. If your whole board operated at that floor, quorum would almost never be reached. Most governance experts recommend a minimum attendance requirement of 75% — and the calculators below can show you exactly what quorum probability looks like at whatever rate your board sets.
+        </p>
+        <div style={{ fontSize: '0.75rem', color: '#475569' }}>
+          Source: <a href="https://library.municode.com/tn/metro_government_of_nashville_and_davidson_county/codes/code_of_ordinances?nodeId=CD_TIT2AD_DIVIIBOCO_CH2.64OROPBOCO_2.64.070TECOATRE" target="_blank" rel="noopener noreferrer" style={{ color: '#6366f1' }}>Metro Nashville Municipal Code §2.64.070</a> — Term commencement; Attendance requirements.
+        </div>
+        </div>
     </div>,
 
     // Step 5 — Think of a coin flip
@@ -1861,15 +1877,15 @@ export default function App() {
       </h3>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: '1.25rem' }}>
         {[
-          { n: '1', col: clr.neutral, t: 'Quorum is a democratic safeguard', b: "It ensures decisions represent the full board — not just whoever showed up." },
-          { n: '2', col: clr.warn, t: 'Attendance is random', b: 'Even reliable members miss meetings unpredictably. Bad streaks happen.' },
-          { n: '3', col: clr.bad, t: 'Average ≠ guaranteed quorum', b: "If average equals quorum, you'll fail roughly half the time." },
-          { n: '4', col: clr.good, t: 'You need a buffer', b: 'Average attendance must be meaningfully higher than quorum to be safe.' },
-          { n: '5', col: clr.neutral, t: 'Board size cuts both ways', b: 'Smaller boards feel each absence more. Larger boards have more statistical buffer.' },
-          { n: '6', col: clr.neutral, t: 'The math is proven', b: 'The binomial distribution is used in medicine, engineering, and finance for exactly this kind of problem.' },
+          { n: '1', col: clr.neutral, t: 'Quorum is a democratic safeguard.', b: "It ensures decisions represent the full board — not just whoever showed up." },
+          { n: '2', col: clr.warn, t: 'Attendance is random.', b: 'Even reliable members miss meetings unpredictably. Bad streaks happen.' },
+          { n: '3', col: clr.bad, t: 'Average ≠ Guaranteed Quorum', b: "If average equals quorum, you'll fail roughly half the time." },
+          { n: '4', col: clr.good, t: 'You need a buffer.', b: 'Average attendance must be meaningfully higher than quorum to be safe.' },
+          { n: '5', col: clr.neutral, t: 'Board size cuts both ways.', b: 'Smaller boards feel each absence more. Larger boards have more statistical buffer.' },
+          { n: '6', col: clr.neutral, t: 'The math is proven.', b: 'The binomial distribution is used in medicine, engineering, and finance for exactly this kind of problem.' },
         ].map(({ n, col, t, b }) => (
           <div key={n} style={{ ...crd({ padding: '0.9rem 1.1rem' }), display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-            <div style={{ width: 28, height: 28, borderRadius: '50%', background: col + '33', border: `2px solid ${col}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: col, flexShrink: 0, fontSize: '0.82rem' }}>
+            <div style={{ width: 28, height: 28, borderRadius: '50%', background: col + '33', border: `2px solid ${col}`, display: 'flex', alignItems: 'left', justifyContent: 'center', fontWeight: 800, color: col, flexShrink: 0, fontSize: '0.82rem' }}>
               {n}
             </div>
             <div>
